@@ -1,3 +1,6 @@
+# archivo cache angular
+/.angular
+/.idea
 # Compiled output
 /dist
 /tmp
