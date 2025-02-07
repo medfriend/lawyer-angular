@@ -1,0 +1,16 @@
+<div class="chat-container">
+    <ul class="messages">
+        <li *ngFor="let message of messages" [ngClass]="{'mine': message.mine}">
+            {{ message.text }}
+        </li>
+    </ul>
+    <div class="flex p-2">
+        <input type="text" [(ngModel)]="newMessage" (keyup.enter)="sendMessage()"
+               class="flex-1 p-2  rounded-full  form-control mr-2"
+               placeholder="Escribe un mensaje aquí...">
+        <button (click)="sendMessage()" class="px-5 py-2 bg-blue-500 text-white rounded-full">
+            <mat-icon>arrow_upward</mat-icon>
+        </button>
+    </div>
+
+</div>
