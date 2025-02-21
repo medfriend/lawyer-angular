@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Client } from '@stomp/stompjs';
+import {Client, IMessage, StompHeaders} from '@stomp/stompjs';
 
 @Injectable({
     providedIn: 'root'
@@ -7,8 +7,14 @@ import { Client } from '@stomp/stompjs';
 export class StompService {
     private client: Client;
     private connectedPromise: Promise<any>;
+    private resolveConnected: (value: any) => void;
 
     constructor() {
+
+        this.connectedPromise = new Promise((resolve) => {
+            this.resolveConnected = resolve;
+        });
+
         this.client = new Client({
             brokerURL: 'ws://127.0.0.1:15674/ws',  // Cambiar a la URL correcta y puerto de RabbitMQ
             connectHeaders: {
@@ -34,9 +40,29 @@ export class StompService {
         this.client.activate();
     }
 
-    async send(destination: string, body: string): Promise<void> {
-        await this.connectedPromise;  // Asegura que la conexión esté establecida
-        this.client.publish({destination, body});
+    async send(destination: string, body: string, userHeader: string): Promise<void> {
+        await this.connectedPromise;
+
+        const headers: StompHeaders = {
+            'user': userHeader
+        }
+
+        this.client.publish({destination, headers, body});
+    }
+
+    subscribeToTopic(destination: string, callback: (message: IMessage) => void): void {
+
+        setTimeout(()=> {
+            if (!this.client.active) {
+                console.error('STOMP Client is not active');
+                return;
+            }
+
+            this.client.subscribe("1053872338", (message: IMessage) => {
+                callback(message);
+            }, {});
+        },5000)
+
     }
 
     disconnect() {

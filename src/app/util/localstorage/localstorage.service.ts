@@ -1,47 +1,45 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import {CookieServiceUtil} from "../cookie/cookie.service";
-
-const isBrowser = typeof window !== 'undefined';
 
 @Injectable({
   providedIn: 'root'
 })
 export class StorageService {
-
   constructor(
-    private cookieService: CookieServiceUtil,
-  ) {
-    console.log(isBrowser)
-  }
+      private cookieService: CookieServiceUtil,
+      @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
 
-  // Set a value in localStorage
   setItem(key: string, value: any): void {
-
     const stringValue = JSON.stringify(value);
-
-    this.cookieService.setCookie(key, stringValue);
-    localStorage.setItem(key, stringValue);
-  }
-
-  // Get a value from localStorage
-  getItem<T>(key: string): T | null {
-    let item = localStorage.getItem(key);
-
-    if (item === null)  {
-      item = this.cookieService.getCookie(key)
-      this.setItem(key, JSON.parse(item));
+    if (isPlatformBrowser(this.platformId)) {
+      this.cookieService.setCookie(key, stringValue);
+      localStorage.setItem(key, stringValue);
     }
-
-    return item ? JSON.parse(item) : null;
   }
 
-  // Remove an item from localStorage
+  getItem<T>(key: string): T | null {
+    if (isPlatformBrowser(this.platformId)) {
+      let item = localStorage.getItem(key);
+      if (item === null) {
+        item = this.cookieService.getCookie(key);
+      }
+      return item ? JSON.parse(item) : null;
+    }
+    return null;
+  }
+
   removeItem(key: string): void {
-    localStorage.removeItem(key);
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.removeItem(key);
+    }
   }
 
-  // Clear all localStorage
   clear(): void {
-    localStorage.clear();
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.clear();
+      this.cookieService.clearCookie();
+    }
   }
 }

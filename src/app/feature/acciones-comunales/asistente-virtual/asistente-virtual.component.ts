@@ -19,14 +19,13 @@ export default class AsistenteVirtualComponent implements OnDestroy, OnInit {
         private stompService: StompService
     ) {}
 
-
     ngOnInit(): void {
-        this.stompService.send("chat-bot","cual es la capital de colombia")
     }
 
     sendMessage(): void {
-        this.stompService.send("chat-bot", this.newMessage)
-        this.newMessage = "";
+        this.stompService.send("chat-bot", this.newMessage, "1053872338").then(r =>  {
+            this.newMessage = ""
+        })
     }
 
     ngOnDestroy(): void {

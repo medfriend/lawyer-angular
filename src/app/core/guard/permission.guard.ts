@@ -2,7 +2,7 @@ import {Injectable} from "@angular/core";
 import {ActivatedRouteSnapshot, CanActivate, Router} from "@angular/router";
 import {StorageService} from "../../util/localstorage/localstorage.service";
 import {AuthData} from "../interfaces/services/localstorage.service";
-import {AuthService} from "../service/auth.service";
+import {AuthService} from "../service/md-security/auth.service";
 
 
 @Injectable({
